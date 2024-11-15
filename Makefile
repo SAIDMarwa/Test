@@ -33,10 +33,11 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/LoRaWANNetwork.o
+OBJS = $O/LoRaWANNetwork.o $O/ClusterMessages_m.o
 
 # Message files
-MSGFILES =
+MSGFILES = \
+    ClusterMessages.msg
 
 # SM files
 SMFILES =

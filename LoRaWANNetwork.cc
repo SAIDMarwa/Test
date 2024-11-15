@@ -31,7 +31,6 @@ double extractValue(const char* str) {
 double distance(Node a, Gateway b) {
     return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
-
 void assignNodesToGateways(Node nodes[], Gateway gateways[], int assignments[], int numNodes, int numGateways) {
     for (int i = 0; i < numNodes; i++) {
         double minDistance = distance(nodes[i], gateways[0]);
@@ -73,8 +72,6 @@ void updateGateways(Node nodes[], Gateway gateways[], int assignments[], int num
         }
     }
 }
-
-
 void kMeans(Node nodes[], Gateway gateways[], int numNodes, int numGateways) {
     int assignments[numNodes];
     int iterations = 0;
@@ -106,6 +103,54 @@ void kMeans(Node nodes[], Gateway gateways[], int numNodes, int numGateways) {
         if (iterations >= MAX_ITERATIONS) break;
 
     } while (assignmentsChanged);
+}
+
+double calculateInertia(Node nodes[], Gateway gateways[], int assignments[], int numNodes, int numGateways) {
+    double inertia = 0.0;
+    for (int i = 0; i < numNodes; i++) {
+        double dist = pow(nodes[i].x - gateways[assignments[i]].x, 2) +
+                      pow(nodes[i].y - gateways[assignments[i]].y, 2);
+        inertia += dist;
+    }
+    return inertia;
+}
+
+
+int findOptimalClusters(Node nodes[], int numNodes) {
+    const int maxClusters = 10;  // Tester jusqu'à 10 clusters
+    double inertias[maxClusters];
+
+    for (int k = 1; k <= maxClusters; k++) {
+        Gateway gateways[k];
+        int assignments[numNodes];
+
+        // Initialiser des passerelles aléatoires
+        for (int i = 0; i < k; i++) {
+            gateways[i].x = nodes[i % numNodes].x;
+            gateways[i].y = nodes[i % numNodes].y;
+        }
+
+        // Appliquer K-Means
+        kMeans(nodes, gateways, numNodes, k);
+
+        // Calculer l'inertie
+        assignNodesToGateways(nodes, gateways, assignments, numNodes, k);
+        inertias[k - 1] = calculateInertia(nodes, gateways, assignments, numNodes, k);
+    }
+
+    // Trouver le coude
+    int optimalK = 1;
+    for (int i = 1; i < maxClusters - 1; i++) {
+        double decrease1 = inertias[i - 1] - inertias[i];
+        double decrease2 = inertias[i] - inertias[i + 1];
+
+        if (decrease1 > decrease2) {
+            optimalK = i + 1;
+            break;
+        }
+    }
+
+    return optimalK;
 }
 
 // Fonction pour charger les positions des nœuds depuis un fichier de configuration
@@ -167,13 +212,20 @@ int main() {
         return 1;  // Erreur de lecture du fichier
     }
 
-    // Initialisation des passerelles (centres des clusters)
-    Gateway gateways[NUM_GATEWAYS] = {
-        {2.0, 2.0}, {6.0, 6.0}, {9.0, 9.0}
-    };
+    // Déterminer le nombre optimal de clusters
+       int optimalClusters = findOptimalClusters(nodes, numNodes);
+       EV << "Nombre optimal de clusters trouvé : " << optimalClusters << "\n";
 
-    // Exécuter l'algorithme K-means
-    kMeans(nodes, gateways, numNodes, NUM_GATEWAYS);
+       Gateway gateways[optimalClusters];
+
+       // Initialiser les passerelles
+       for (int i = 0; i < optimalClusters; i++) {
+           gateways[i].x = nodes[i % numNodes].x;
+           gateways[i].y = nodes[i % numNodes].y;
+       }
+
+       // Exécuter K-Means avec le nombre optimal de clusters
+       kMeans(nodes, gateways, numNodes, optimalClusters);
 
     // Afficher les positions des passerelles
     printf("Positions des passerelles optimisées :\n");

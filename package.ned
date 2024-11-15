@@ -17,44 +17,44 @@ import inet.environment.contract.IObjectCache;
 network LoRaWANNetwork
 {
     parameters:
-        int numberOfNodes = default(100);
-        int numberOfGateways = default(5);
+        int numberOfNodes = default(10);
+        int numberOfGateways = default(3);
         int networkSizeX = default(10000);
         int networkSizeY = default(10000);
         @display("bgb=networkSizeX,networkSizeY");
 
     submodules:
         loRaNodes[numberOfNodes]: LoRaNode {
-            @display("p=400,304");
+            @display("p=309,412");
         }
         loRaGW[numberOfGateways]: LoRaGW {
             @display("p=157,238");
         }
         LoRaMedium: LoRaMedium {
-            @display("p=309,102");
+            @display("p=9800,26");
         }
         networkServer: StandardHost {
             parameters:
-                @display("p=49,44");
+                @display("p=490,440");
         }
         configurator: Ipv4NetworkConfigurator {
             parameters:
                 assignDisjunctSubnetAddresses = false;
-                @display("p=318,27");
+                @display("p=6180,270");
         }
         internetCloud: InternetCloud {
-            @display("p=231,44");
+            @display("p=2310,440");
         }
         gwRouter[numberOfGateways]: Router {
-            @display("p=231,134");
+            @display("p=2310,1340");
         }
         nsRouter: Router {
-            @display("p=137,44");
+            @display("p=1370,440");
 
         }
         physicalEnvironment: PhysicalEnvironment {
             parameters:
-                @display("p=412,656");
+                @display("p=4120,6560");
         }
 
         obstacle1: PhysicalEnvironment {

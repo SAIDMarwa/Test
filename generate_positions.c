@@ -33,7 +33,7 @@ void generatePositions(int numNodes, double minX, double maxX, double minY, doub
 }
 
 int main() {
-    int numNodes = 100;                // Nombre de nœuds
+    int numNodes = 10;                // Nombre de nœuds
     double areaMinX = 0;              // Limite minimale de X
     double areaMaxX = 10000;           // Limite maximale de X
     double areaMinY = 0;              // Limite minimale de Y
